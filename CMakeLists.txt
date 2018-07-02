@@ -3,8 +3,8 @@ project(Chip8Emulator)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.cpp)
-add_executable(Chip8Emulator ${SOURCE_FILES})
+set(SOURCE_FILES main.cpp CPU.cpp CPU.h Instruction.cpp Instruction.h Screen.cpp Screen.h Chip8Emulator.cpp Chip8Emulator.h)
+add_executable(Chip8Emulator ${SOURCE_FILES} CPU.cpp CPU.h Instruction.cpp Instruction.h Screen.cpp Screen.h Chip8Emulator.cpp Chip8Emulator.h)
 
 
 
