@@ -13,9 +13,11 @@ private:
     int programCounter;
     int stackPointer;
 
-    //Register I
+
     uint16_t I;
     uint8_t V[16];
+    uint8_t delayTimer;
+    uint8_t soundTimer;
 
 };
 
