@@ -71,20 +71,23 @@ Chip8Emulator::~Chip8Emulator()
     delete screen;
 }
 
-void Chip8Emulator::loadROM(std::string romPath) {
+bool Chip8Emulator::loadROM(std::string romPath) {
     std::ifstream fin(romPath);
+
+    if(!fin.good()){
+        fin.close();
+        return false;
+    }
 
     int address = 0x200;
     uint8_t byte;
     while(fin.good()){
         byte = (uint8_t)fin.get();
-        std::cout << (int)byte << std::endl;
         memory[address] = byte;
         address++;
     }
-    std::cout << address-0x200 << std::endl;
 
-    fin.close();
+    return true;
 }
 
 //

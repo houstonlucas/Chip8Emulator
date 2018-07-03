@@ -38,7 +38,7 @@ public:
 
     void cleanupSDL();
 
-    void loadROM(std::string romPath);
+    bool loadROM(std::string romPath);
 };
 
 
