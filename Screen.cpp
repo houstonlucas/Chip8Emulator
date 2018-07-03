@@ -20,9 +20,11 @@ Screen::Screen(SDL_Window *mainWindow) {
 
 }
 
-void Screen::updateScreen(uint8_t *vram) {
+void Screen::updateScreen(const uint8_t *vram) {
     float cellWidth = width/float(numCellsWide);
     float cellHeight = height/float(numCellsTall);
+    int rowSize = 8;
+    float c;
     float vertices[] = {
             0.0f,  cellHeight,
             cellWidth,  cellHeight,
@@ -31,13 +33,17 @@ void Screen::updateScreen(uint8_t *vram) {
     };
 
     glEnableClientState(GL_VERTEX_ARRAY);
+    for(int y = 0; y < numCellsTall; y++){
+        int rowOffset = y*rowSize;
+        for(int x = 0; x < numCellsWide; x++){
+            int byteOffset = x/8;
+            int byte = vram[rowOffset + byteOffset];
+            int bit = (byte >> (7 - x%8))& 1;
+            c = (float)bit;
 
-    for(int x = 0; x < numCellsWide; x++){
-        for(int y = 0; y < numCellsTall; y++){
             glPushMatrix();
-            float c = (x+y)%2;
-            glColor3f(c, c, c);
-            glTranslatef(x*cellWidth, y*cellHeight, 0.0f);
+            glColor3f(c,c,c);
+            glTranslatef(x*cellWidth, height - (y+1)*cellHeight, 0.0f);
             glVertexPointer(2, GL_FLOAT, 0, vertices);
             glDrawArrays(GL_QUADS, 0, 4);
             glPopMatrix();
@@ -47,3 +53,4 @@ void Screen::updateScreen(uint8_t *vram) {
     glDisableClientState(GL_VERTEX_ARRAY);
     SDL_GL_SwapWindow(window);
 }
+

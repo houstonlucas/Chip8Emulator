@@ -21,7 +21,7 @@ private:
 
 public:
     Screen(SDL_Window *window);
-    void updateScreen(uint8_t *vram);
+    void updateScreen(const uint8_t *vram);
 
 
 };
