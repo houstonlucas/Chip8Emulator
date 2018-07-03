@@ -8,21 +8,24 @@
 
 #include "CPU.h"
 #include "Screen.h"
+#include <fstream>
 
 class Chip8Emulator {
 private:
-
     Screen *screen;
     CPU cpu;
     SDL_Window *window;
     SDL_GLContext context;
     const std::string windowTitle = "Chip8Emulator";
+    uint8_t *memory;
 
     const int HEIGHT = 320;
     const int WIDTH = 640;
 
 
 public:
+    Chip8Emulator();
+
     ~Chip8Emulator();
 
     void runEmulation();
@@ -34,6 +37,8 @@ public:
     void checkSDLError(int line);
 
     void cleanupSDL();
+
+    void loadROM(std::string romPath);
 };
 
 
