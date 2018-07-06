@@ -39,6 +39,8 @@ public:
     void cleanupSDL();
 
     bool loadROM(std::string romPath);
+
+    void initializeSpriteMemory();
 };
 
 
