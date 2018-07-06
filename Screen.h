@@ -15,13 +15,17 @@ private:
     SDL_Window *window;
     int height;
     int width;
+    uint8_t *vram;
+    int rowSize;
 
     const int numCellsWide = 64;
     const int numCellsTall = 32;
 
 public:
     Screen(SDL_Window *window);
-    void updateScreen(const uint8_t *vram);
+    void updateScreen();
+    void clearScreen();
+    void drawSprite(const uint8_t *memory, int address, int numRows, int xPos, int yPos);
 
 
 };
