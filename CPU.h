@@ -8,6 +8,8 @@
 
 #include <stdint-gcc.h>
 #include "Screen.h"
+#include "Buzzer.h"
+
 const uint8_t STACK_POINTER_BASE = 0x50;
 const uint16_t PROGRAM_COUNTER_START = 0x200;
 
@@ -25,6 +27,8 @@ private:
     const uint8_t leftNibbleMask = 0xf0;
     const uint8_t rightNibbleMask = 0x0f;
 
+    Buzzer buzzer;
+
     void process0x8(uint8_t x, uint8_t y, uint8_t k);
     void process0xF(uint8_t *memory, uint8_t x, uint8_t rightByte);
 
@@ -39,6 +43,8 @@ public:
     void processInstruction(uint8_t *memory, Screen *screen);
 
     void loadSpriteAddress(uint8_t x);
+
+    void handleSound();
 
     uint16_t getProgramCounter() const;
 

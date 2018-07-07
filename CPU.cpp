@@ -231,3 +231,13 @@ void CPU::decrementTimers() {
 uint8_t CPU::getStackPointer() const {
     return stackPointer;
 }
+
+void CPU::handleSound() {
+    if(soundTimer != 0){
+        if(!buzzer.isPlaying) {
+            buzzer.startBeep();
+        }
+    }else{
+        buzzer.stopBeep();
+    }
+}

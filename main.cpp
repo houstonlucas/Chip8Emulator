@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Chip8Emulator.h"
+#include "Buzzer.h"
 
 int main() {
 

@@ -38,6 +38,7 @@ void Chip8Emulator::runEmulation()
         cpu.processInstruction(memory, screen);
 
         screen->updateScreen();
+        cpu.handleSound();
 //        std::cout << "Program Counter = " << (int)cpu.getProgramCounter() << std::endl;
 //        std::cout << "Stack Pointer = " << ((cpu.getStackPointer()-STACK_POINTER_BASE)/2) << std::endl;
 //        SDL_Delay(static_cast<Uint32>((1.0 / 360.0) * 1000));
