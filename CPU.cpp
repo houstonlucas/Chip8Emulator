@@ -23,92 +23,83 @@ void CPU::processInstruction(uint8_t *memory, Screen *screen) {
             if(rightByte == 0xE0){
                 screen->clearScreen();
             }else if(rightByte == 0xEE){
-                //TODO: RET
+                // programCounter = memory[stackPointer];
+                memcpy(&programCounter, memory + stackPointer, 2);
+                stackPointer -= 2;
             }else{
                 //SYS address???
             }
-            std::cout << "0x0" << std::endl;
             break;
         case 0x1:
             // JP address
             programCounter = address;
-            std::cout << "0x1" << std::endl;
             break;
         case 0x2:
             // CALL address
-            std::cout << "0x2" << std::endl;
+            stackPointer += 2;
+            // memory[stackPointer] = programCounter;
+            memcpy(memory + stackPointer, &programCounter, 2);
+            programCounter = address;
             break;
         case 0x3:
             // SE Vx kk
             if(V[x] == rightByte){
                 programCounter += 2;
             }
-            std::cout << "0x3" << std::endl;
             break;
         case 0x4:
             // SNE Vx kk
             if(V[x] != rightByte){
                 programCounter += 2;
             }
-            std::cout << "0x4" << std::endl;
             break;
         case 0x5:
             // SE Vx Vy 0
             if(V[x] == V[y]){
                 programCounter += 2;
             }
-            std::cout << "0x5" << std::endl;
             break;
         case 0x6:
             // LD Vx kk
             V[x] = rightByte;
-            std::cout << "0x6" << std::endl;
             break;
         case 0x7:
             // Add Vx kk
             V[x] += rightByte;
-            std::cout << "0x7" << std::endl;
             break;
         case 0x8:
             // Various Math
             process0x8(x, y, k);
-            std::cout << "0x8" << std::endl;
             break;
         case 0x9:
             // SNE Vx Vy 0
             if(V[x] != V[y]){
                 programCounter += 2;
             }
-            std::cout << "0x9" << std::endl;
             break;
         case 0xa:
             // LD I address
             I = address;
-            std::cout << "0xa" << std::endl;
             break;
         case 0xb:
             // JP V0 address
             programCounter = V[0] + address;
-            std::cout << "0xb" << std::endl;
             break;
         case 0xc:
             // RND Vx kk
             V[x] = ((uint8_t) random()) & rightByte;
-            std::cout << "0xc" << std::endl;
             break;
         case 0xd:
             // DRW Vx Vy k
             screen->drawSprite(memory, I, k, V[x], V[y]);
-            std::cout << "0xd" << std::endl;
             break;
         case 0xe:
             // Skip instructions
-            std::cout << "0xe" << std::endl;
+            //TODO: Implement instructions
             break;
         case 0xf:
-            // Various flag operations
+            // Various special operations
             process0xF(memory, x, rightByte);
-            std::cout << "0xf" << std::endl;
             break;
         default:
             //NOP I guess
