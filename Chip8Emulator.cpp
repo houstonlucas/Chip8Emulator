@@ -58,7 +58,7 @@ bool Chip8Emulator::loadROM(std::string romPath) {
         return false;
     }
 
-    int address = 0x200;
+    uint16_t address = PROGRAM_COUNTER_START;
     uint8_t byte;
     while(fin.good()){
         byte = (uint8_t)fin.get();

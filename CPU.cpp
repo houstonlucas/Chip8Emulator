@@ -5,8 +5,6 @@
 #include "CPU.h"
 
 void CPU::processInstruction(uint8_t *memory, Screen *screen) {
-    uint8_t leftNibbleMask = 0xf0;
-    uint8_t rightNibbleMask = 0x0f;
     uint8_t leftByte = memory[programCounter];
     uint8_t rightByte = memory[programCounter+1];
 
@@ -14,7 +12,7 @@ void CPU::processInstruction(uint8_t *memory, Screen *screen) {
     uint16_t address = (highAddress) ^ rightByte;
 
     uint8_t x = leftByte & rightNibbleMask;
-    uint8_t y = rightByte & leftNibbleMask;
+    uint8_t y = (rightByte & leftNibbleMask) >> 4;
     uint8_t k = rightByte & rightNibbleMask;
 
     switch((leftByte & leftNibbleMask) >> 4){
@@ -118,7 +116,7 @@ void CPU::processInstruction(uint8_t *memory, Screen *screen) {
     programCounter += 2;
 }
 
-int CPU::getProgramCounter() const {
+uint16_t CPU::getProgramCounter() const {
     return programCounter;
 }
 
@@ -178,6 +176,9 @@ void CPU::process0x8(uint8_t x, uint8_t y, uint8_t k) {
 }
 
 void CPU::process0xF(uint8_t *memory, uint8_t x, uint8_t rightByte) {
+    uint8_t hundreds;
+    uint8_t tens;
+    uint8_t val = V[x];
     switch(rightByte){
         case 0x07:
             V[x] = delayTimer;
@@ -199,8 +200,6 @@ void CPU::process0xF(uint8_t *memory, uint8_t x, uint8_t rightByte) {
             break;
         case 0x33:
             // BCD encoding into I, I+1, I+2 addresses
-            uint8_t hundreds, tens;
-            uint8_t val = V[x];
             hundreds = val/(uint8_t)100;
             memory[I] = hundreds;
             val -= hundreds*100;
