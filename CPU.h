@@ -29,6 +29,7 @@ private:
     void process0xF(uint8_t *memory, uint8_t x, uint8_t rightByte);
 
 public:
+    uint8_t getStackPointer() const;
 
     const int SPRITE_ADDRESSES[16] = {0x0, 0x5, 0xa, 0xf,
                                     0x14, 0x19, 0x1e, 0x23,
@@ -39,7 +40,9 @@ public:
 
     void loadSpriteAddress(uint8_t x);
 
-    int getProgramCounter() const;
+    uint16_t getProgramCounter() const;
+
+    void decrementTimers();
 };
 
 

@@ -226,3 +226,16 @@ void CPU::process0xF(uint8_t *memory, uint8_t x, uint8_t rightByte) {
 void CPU::loadSpriteAddress(uint8_t x){
     I = (uint16_t) SPRITE_ADDRESSES[V[x]];
 }
+
+void CPU::decrementTimers() {
+    if(delayTimer != 0){
+        delayTimer--;
+    }
+    if(soundTimer != 0){
+        soundTimer--;
+    }
+}
+
+uint8_t CPU::getStackPointer() const {
+    return stackPointer;
+}
