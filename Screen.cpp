@@ -79,6 +79,9 @@ void Screen::drawSprite(const uint8_t *memory, int address, int numRows, int xPo
         uint8_t spriteByte = memory[address+row];
         uint8_t leftByte = vram[rowOffset + numBytesIntoRow];
         vram[rowOffset + numBytesIntoRow] = leftByte ^ (spriteByte >> numBitsIntoByte);
+        if(numBytesIntoRow >= (numCellsWide/8) - 1){
+            rowOffset -= rowSize;
+        }
         uint8_t rightByte = vram[rowOffset + numBytesIntoRow + 1];
         vram[rowOffset + numBytesIntoRow+1] = rightByte ^ (eightBytes&(spriteByte << (8-numBitsIntoByte)));
     }
