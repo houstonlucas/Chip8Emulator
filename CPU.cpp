@@ -25,7 +25,7 @@ void CPU::processInstruction(uint8_t *memory, Screen *screen) {
             }else if(rightByte == 0xEE){
                 //TODO: RET
             }else{
-                //SYS addr???
+                //SYS address???
             }
             std::cout << "0x0" << std::endl;
             break;
@@ -195,11 +195,19 @@ void CPU::process0xF(uint8_t *memory, uint8_t x, uint8_t rightByte) {
             I += V[x];
             break;
         case 0x29:
-            //TODO: load sprite Vx address;
             loadSpriteAddress(x);
             break;
         case 0x33:
-            //TODO: BCD encoding into I, I+1, I+2 address
+            // BCD encoding into I, I+1, I+2 addresses
+            uint8_t hundreds, tens;
+            uint8_t val = V[x];
+            hundreds = val/(uint8_t)100;
+            memory[I] = hundreds;
+            val -= hundreds*100;
+            tens = val/(uint8_t)10;
+            memory[I + 1] = tens;
+            val -= tens*10;
+            memory[I + 2] = val;
             break;
         case 0x55:
             for(int i = 0; i <= x; i++){
