@@ -15,6 +15,8 @@ void CPU::processInstruction(uint8_t *memory, Screen *screen) {
     uint8_t y = (rightByte & leftNibbleMask) >> 4;
     uint8_t k = rightByte & rightNibbleMask;
 
+    programCounter += 2;
+
     switch((leftByte & leftNibbleMask) >> 4){
         case 0x0:
             // CLS and RET
@@ -113,7 +115,6 @@ void CPU::processInstruction(uint8_t *memory, Screen *screen) {
             // ¯\_(ツ)_/¯
             break;
     }
-    programCounter += 2;
 }
 
 uint16_t CPU::getProgramCounter() const {
