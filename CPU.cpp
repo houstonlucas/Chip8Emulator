@@ -123,33 +123,53 @@ int CPU::getProgramCounter() const {
 }
 
 void CPU::process0x8(uint8_t x, uint8_t y, uint8_t k) {
-    //TODO: set flags on instructions
+    uint16_t result;
     switch(k){
-        case 0:
+        case 0: // LD
             V[x] = V[y];
             break;
-        case 1:
+        case 1: // OR
             V[x] = V[x] | V[y];
             break;
-        case 2:
+        case 2: // AND
             V[x] = V[x] & V[y];
             break;
-        case 3:
+        case 3: // XOR
             V[x] = V[x] ^ V[y];
             break;
-        case 4:
-            V[x] = V[x] + V[y];
+        case 4: // ADD
+            result = V[x] + V[y];
+            if(result > 255){
+                V[0xf] = 1;
+            }else{
+                V[0xf] = 0;
+            }
+            V[x] = static_cast<uint8_t>(result);
             break;
-        case 5:
+        case 5: // SUB
             V[x] = V[x] - V[y];
+            if(V[x] > V[y]){
+                V[0xf] = 1;
+            }else{
+                V[0xf] = 0;
+            }
             break;
-        case 6:
+        case 6: // SHR
+            // Set flag
+            V[0xf] = V[x] & (uint8_t)0x01;
             V[x] = V[x] >> 1;
             break;
-        case 7:
+        case 7: // SUBN
+            if(V[y] > V[x]){
+                V[0xf] = 1;
+            }else{
+                V[0xf] = 0;
+            }
             V[x] = V[y] - V[x];
             break;
-        case 0xe:
+        case 0xe: // SHL
+            // Set flag
+            V[0xf] = (V[x] & (uint8_t)0x80) >> (uint8_t)0x7;
             V[x] = V[x] << 1;
             break;
         default:
