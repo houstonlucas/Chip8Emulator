@@ -9,21 +9,27 @@
 #include "CPU.h"
 #include "Screen.h"
 #include <fstream>
+#include <map>
 
+
+class CPU;
 class Chip8Emulator {
 private:
-    Screen *screen;
-    CPU cpu;
     SDL_Window *window;
     SDL_GLContext context;
     const std::string windowTitle = "Chip8Emulator";
-    uint8_t *memory;
 
     const int HEIGHT = 320;
     const int WIDTH = 640;
 
 
 public:
+    Screen *screen;
+    CPU *cpu;
+    bool inputValues[16];
+    std::map<SDL_Keycode, uint8_t> keyMapping;
+    uint8_t *memory;
+
     Chip8Emulator();
 
     ~Chip8Emulator();
@@ -41,6 +47,10 @@ public:
     bool loadROM(std::string romPath);
 
     void initializeSpriteMemory();
+
+    void initializeKeyMapping();
+
+    void updateInputValues(SDL_Event &event);
 };
 
 

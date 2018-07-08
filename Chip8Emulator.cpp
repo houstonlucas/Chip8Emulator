@@ -8,8 +8,15 @@ Chip8Emulator::Chip8Emulator(){
     memory = new uint8_t[4096];
     initMainWindow(windowTitle);
     screen = new Screen(window);
+    cpu = new CPU();
+
+    // Initialize keys
+    for(bool &b: inputValues){
+        b = false;
+    }
 
     initializeSpriteMemory();
+    initializeKeyMapping();
 }
 
 void Chip8Emulator::runEmulation()
@@ -23,25 +30,19 @@ void Chip8Emulator::runEmulation()
             if (event.type == SDL_QUIT) {
                 emulation_is_running = false;
             }
+            updateInputValues(event);
             if (event.type == SDL_KEYDOWN){
-                switch(event.key.keysym.sym){
-                    case SDLK_ESCAPE:
-                        emulation_is_running = false;
-                        break;
-                    default:
-                        break;
+                if(event.key.keysym.sym == SDLK_ESCAPE){
+                    emulation_is_running = false;
                 }
             }
-
         }
 
-        cpu.processInstruction(memory, screen);
+        cpu->processInstruction(this);
 
         screen->updateScreen();
-        cpu.handleSound();
-//        std::cout << "Program Counter = " << (int)cpu.getProgramCounter() << std::endl;
-//        std::cout << "Stack Pointer = " << ((cpu.getStackPointer()-STACK_POINTER_BASE)/2) << std::endl;
-//        SDL_Delay(static_cast<Uint32>((1.0 / 360.0) * 1000));
+        //TODO: call this at 60Hz
+        cpu->handleSound();
     }
 }
 
@@ -168,7 +169,7 @@ void Chip8Emulator::initializeSpriteMemory() {
             0x90,
             0xf0,
     };
-    memcpy(memory+cpu.SPRITE_ADDRESSES[0], sprite0, 5);
+    memcpy(memory+cpu->SPRITE_ADDRESSES[0], sprite0, 5);
 
     uint8_t sprite1[] = {
             0x20,
@@ -177,7 +178,7 @@ void Chip8Emulator::initializeSpriteMemory() {
             0x20,
             0x70,
     };
-    memcpy(memory+cpu.SPRITE_ADDRESSES[1], sprite1, 5);
+    memcpy(memory+cpu->SPRITE_ADDRESSES[1], sprite1, 5);
     uint8_t sprite2[] = {
             0xf0,
             0x10,
@@ -185,7 +186,7 @@ void Chip8Emulator::initializeSpriteMemory() {
             0x80,
             0xf0,
     };
-    memcpy(memory+cpu.SPRITE_ADDRESSES[2], sprite2, 5);
+    memcpy(memory+cpu->SPRITE_ADDRESSES[2], sprite2, 5);
     uint8_t sprite3[] = {
             0xf0,
             0x10,
@@ -193,7 +194,7 @@ void Chip8Emulator::initializeSpriteMemory() {
             0x10,
             0xf0,
     };
-    memcpy(memory+cpu.SPRITE_ADDRESSES[3], sprite3, 5);
+    memcpy(memory+cpu->SPRITE_ADDRESSES[3], sprite3, 5);
     uint8_t sprite4[] = {
             0x90,
             0x90,
@@ -201,7 +202,7 @@ void Chip8Emulator::initializeSpriteMemory() {
             0x10,
             0x10,
     };
-    memcpy(memory+cpu.SPRITE_ADDRESSES[4], sprite4, 5);
+    memcpy(memory+cpu->SPRITE_ADDRESSES[4], sprite4, 5);
     uint8_t sprite5[] = {
             0xf0,
             0x80,
@@ -209,7 +210,7 @@ void Chip8Emulator::initializeSpriteMemory() {
             0x10,
             0xf0,
     };
-    memcpy(memory+cpu.SPRITE_ADDRESSES[5], sprite5, 5);
+    memcpy(memory+cpu->SPRITE_ADDRESSES[5], sprite5, 5);
     uint8_t sprite6[] = {
             0xf0,
             0x80,
@@ -217,7 +218,7 @@ void Chip8Emulator::initializeSpriteMemory() {
             0x90,
             0xf0,
     };
-    memcpy(memory+cpu.SPRITE_ADDRESSES[6], sprite6, 5);
+    memcpy(memory+cpu->SPRITE_ADDRESSES[6], sprite6, 5);
     uint8_t sprite7[] = {
             0xf0,
             0x10,
@@ -225,7 +226,7 @@ void Chip8Emulator::initializeSpriteMemory() {
             0x40,
             0x40,
     };
-    memcpy(memory+cpu.SPRITE_ADDRESSES[7], sprite7, 5);
+    memcpy(memory+cpu->SPRITE_ADDRESSES[7], sprite7, 5);
     uint8_t sprite8[] = {
             0xf0,
             0x90,
@@ -233,7 +234,7 @@ void Chip8Emulator::initializeSpriteMemory() {
             0x90,
             0xf0,
     };
-    memcpy(memory+cpu.SPRITE_ADDRESSES[8], sprite8, 5);
+    memcpy(memory+cpu->SPRITE_ADDRESSES[8], sprite8, 5);
     uint8_t sprite9[] = {
             0xf0,
             0x90,
@@ -241,7 +242,7 @@ void Chip8Emulator::initializeSpriteMemory() {
             0x10,
             0x10,
     };
-    memcpy(memory+cpu.SPRITE_ADDRESSES[9], sprite9, 5);
+    memcpy(memory+cpu->SPRITE_ADDRESSES[9], sprite9, 5);
     uint8_t spriteA[] = {
             0xf0,
             0x90,
@@ -249,7 +250,7 @@ void Chip8Emulator::initializeSpriteMemory() {
             0x90,
             0x90,
     };
-    memcpy(memory+cpu.SPRITE_ADDRESSES[0xa], spriteA, 5);
+    memcpy(memory+cpu->SPRITE_ADDRESSES[0xa], spriteA, 5);
     uint8_t spriteB[] = {
             0xe0,
             0x90,
@@ -257,7 +258,7 @@ void Chip8Emulator::initializeSpriteMemory() {
             0x90,
             0xe0,
     };
-    memcpy(memory+cpu.SPRITE_ADDRESSES[0xb], spriteB, 5);
+    memcpy(memory+cpu->SPRITE_ADDRESSES[0xb], spriteB, 5);
     uint8_t spriteC[] = {
             0xf0,
             0x80,
@@ -265,7 +266,7 @@ void Chip8Emulator::initializeSpriteMemory() {
             0x80,
             0xf0,
     };
-    memcpy(memory+cpu.SPRITE_ADDRESSES[0xc], spriteC, 5);
+    memcpy(memory+cpu->SPRITE_ADDRESSES[0xc], spriteC, 5);
     uint8_t spriteD[] = {
             0xe0,
             0x90,
@@ -273,7 +274,7 @@ void Chip8Emulator::initializeSpriteMemory() {
             0x90,
             0xe0,
     };
-    memcpy(memory+cpu.SPRITE_ADDRESSES[0xd], spriteD, 5);
+    memcpy(memory+cpu->SPRITE_ADDRESSES[0xd], spriteD, 5);
     uint8_t spriteE[] = {
             0xf0,
             0x80,
@@ -281,7 +282,7 @@ void Chip8Emulator::initializeSpriteMemory() {
             0x80,
             0xf0,
     };
-    memcpy(memory+cpu.SPRITE_ADDRESSES[0xe], spriteE, 5);
+    memcpy(memory+cpu->SPRITE_ADDRESSES[0xe], spriteE, 5);
     uint8_t spriteF[] = {
             0xf0,
             0x80,
@@ -289,5 +290,36 @@ void Chip8Emulator::initializeSpriteMemory() {
             0x80,
             0x80,
     };
-    memcpy(memory+cpu.SPRITE_ADDRESSES[0xf], spriteF, 5);
+    memcpy(memory+cpu->SPRITE_ADDRESSES[0xf], spriteF, 5);
+}
+
+void Chip8Emulator::updateInputValues(SDL_Event &event) {
+    if(event.type == SDL_KEYDOWN | event.type == SDL_KEYUP) {
+        bool pressed = event.type == SDL_KEYDOWN;
+        auto it = keyMapping.find(event.key.keysym.sym);
+        if(it != keyMapping.end()){
+            uint8_t index = keyMapping[event.key.keysym.sym];
+            inputValues[index] = pressed;
+        }
+    }
+}
+
+void Chip8Emulator::initializeKeyMapping() {
+    //TODO: Load config file?
+    keyMapping[SDLK_1] = 0x01;
+    keyMapping[SDLK_2] = 0x02;
+    keyMapping[SDLK_3] = 0x03;
+    keyMapping[SDLK_4] = 0x0c;
+    keyMapping[SDLK_q] = 0x04;
+    keyMapping[SDLK_w] = 0x05;
+    keyMapping[SDLK_e] = 0x06;
+    keyMapping[SDLK_r] = 0x0d;
+    keyMapping[SDLK_a] = 0x07;
+    keyMapping[SDLK_s] = 0x08;
+    keyMapping[SDLK_d] = 0x09;
+    keyMapping[SDLK_f] = 0x0e;
+    keyMapping[SDLK_z] = 0x0a;
+    keyMapping[SDLK_x] = 0x00;
+    keyMapping[SDLK_c] = 0x0b;
+    keyMapping[SDLK_v] = 0x0f;
 }

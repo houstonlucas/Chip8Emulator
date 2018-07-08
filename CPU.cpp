@@ -4,7 +4,12 @@
 
 #include "CPU.h"
 
-void CPU::processInstruction(uint8_t *memory, Screen *screen) {
+void CPU::processInstruction(const Chip8Emulator *emulator) {
+    uint8_t *memory = emulator->memory;
+    Screen *screen = emulator->screen;
+    const bool *inputValues = emulator->inputValues;
+
+
     uint8_t leftByte = memory[programCounter];
     uint8_t rightByte = memory[programCounter+1];
 
@@ -95,11 +100,19 @@ void CPU::processInstruction(uint8_t *memory, Screen *screen) {
             break;
         case 0xe:
             // Skip instructions
-            //TODO: Implement instructions
+            if(rightByte == 0x9e){
+                if(inputValues[V[x]]){
+                    programCounter += 2;
+                }
+            }else if(rightByte == 0xa1){
+                if(!inputValues[V[x]]){
+                    programCounter += 2;
+                }
+            }
             break;
         case 0xf:
             // Various special operations
-            process0xF(memory, x, rightByte);
+            process0xF(emulator, x, rightByte);
             break;
         default:
             //NOP I guess
@@ -167,7 +180,8 @@ void CPU::process0x8(uint8_t x, uint8_t y, uint8_t k) {
     }
 }
 
-void CPU::process0xF(uint8_t *memory, uint8_t x, uint8_t rightByte) {
+void CPU::process0xF(const Chip8Emulator *emulator, uint8_t x, uint8_t rightByte) {
+    uint8_t *memory = emulator->memory;
     uint8_t hundreds;
     uint8_t tens;
     uint8_t val = V[x];
@@ -176,7 +190,7 @@ void CPU::process0xF(uint8_t *memory, uint8_t x, uint8_t rightByte) {
             V[x] = delayTimer;
             break;
         case 0x0a:
-            //TODO: input stuff
+            waitForKey(emulator, x);
             break;
         case 0x15:
             delayTimer = V[x];
@@ -240,4 +254,31 @@ void CPU::handleSound() {
     }else{
         buzzer.stopBeep();
     }
+}
+
+void CPU::waitForKey(const Chip8Emulator *emu, uint8_t x) {
+    bool keyPressed = false;
+    std::cout << "Waiting for key press." << std::endl;
+    while(!keyPressed){
+        SDL_Event event;
+        while (SDL_PollEvent(&event)){
+
+        }
+    }
+}
+
+CPU::CPU() {
+    programCounter = PROGRAM_COUNTER_START;
+    stackPointer = STACK_POINTER_BASE;
+
+    I = 0;
+    delayTimer = 0;
+    soundTimer = 0;
+    for (uint8_t &reg : V) {
+        reg = 0;
+    }
+
+    leftNibbleMask = 0xf0;
+    rightNibbleMask = 0x0f;
+
 }
