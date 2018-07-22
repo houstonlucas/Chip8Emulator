@@ -85,6 +85,8 @@ void Screen::drawSprite(const uint8_t *memory, int address, int numRows, int xPo
         uint8_t rightByte = vram[rowOffset + numBytesIntoRow + 1];
         vram[rowOffset + numBytesIntoRow+1] = rightByte ^ (eightBytes&(spriteByte << (8-numBitsIntoByte)));
     }
+
+    updateScreen();
 }
 
 uint8_t createMask(int numBits){

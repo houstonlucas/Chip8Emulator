@@ -40,7 +40,6 @@ void Chip8Emulator::runEmulation()
 
         cpu->processInstruction(this);
 
-        screen->updateScreen();
         //TODO: call this at 60Hz
         cpu->handleSound();
     }
@@ -293,15 +292,18 @@ void Chip8Emulator::initializeSpriteMemory() {
     memcpy(memory+cpu->SPRITE_ADDRESSES[0xf], spriteF, 5);
 }
 
-void Chip8Emulator::updateInputValues(SDL_Event &event) {
+bool Chip8Emulator::updateInputValues(SDL_Event &event) {
+    bool somethingChanged = false;
     if(event.type == SDL_KEYDOWN | event.type == SDL_KEYUP) {
         bool pressed = event.type == SDL_KEYDOWN;
         auto it = keyMapping.find(event.key.keysym.sym);
         if(it != keyMapping.end()){
             uint8_t index = keyMapping[event.key.keysym.sym];
             inputValues[index] = pressed;
+            somethingChanged = true;
         }
     }
+    return somethingChanged;
 }
 
 void Chip8Emulator::initializeKeyMapping() {

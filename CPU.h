@@ -32,7 +32,7 @@ private:
     Buzzer buzzer;
 
     void process0x8(uint8_t x, uint8_t y, uint8_t k);
-    void process0xF(const Chip8Emulator *emulator, uint8_t x, uint8_t rightByte);
+    void process0xF(Chip8Emulator *emulator, uint8_t x, uint8_t rightByte);
 
 public:
 
@@ -46,7 +46,7 @@ public:
                                     0x3c, 0x41, 0x46, 0x4b
     };
 
-    void processInstruction(const Chip8Emulator *emulator);
+    void processInstruction(Chip8Emulator *emulator);
 
     void loadSpriteAddress(uint8_t x);
 
@@ -56,7 +56,7 @@ public:
 
     void decrementTimers();
 
-    void waitForKey(const Chip8Emulator *emu, uint8_t x);
+    void waitForKey(Chip8Emulator *emu, uint8_t x);
 
 };
 

@@ -50,7 +50,7 @@ public:
 
     void initializeKeyMapping();
 
-    void updateInputValues(SDL_Event &event);
+    bool updateInputValues(SDL_Event &event);
 };
 
 

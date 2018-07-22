@@ -4,7 +4,7 @@
 
 #include "CPU.h"
 
-void CPU::processInstruction(const Chip8Emulator *emulator) {
+void CPU::processInstruction(Chip8Emulator *emulator) {
     uint8_t *memory = emulator->memory;
     Screen *screen = emulator->screen;
     const bool *inputValues = emulator->inputValues;
@@ -180,7 +180,7 @@ void CPU::process0x8(uint8_t x, uint8_t y, uint8_t k) {
     }
 }
 
-void CPU::process0xF(const Chip8Emulator *emulator, uint8_t x, uint8_t rightByte) {
+void CPU::process0xF(Chip8Emulator *emulator, uint8_t x, uint8_t rightByte) {
     uint8_t *memory = emulator->memory;
     uint8_t hundreds;
     uint8_t tens;
@@ -256,13 +256,23 @@ void CPU::handleSound() {
     }
 }
 
-void CPU::waitForKey(const Chip8Emulator *emu, uint8_t x) {
+void CPU::waitForKey(Chip8Emulator *emu, uint8_t x) {
     bool keyPressed = false;
+    bool oldValues[16];
+    memset(oldValues, false, 16);
     std::cout << "Waiting for key press." << std::endl;
     while(!keyPressed){
         SDL_Event event;
         while (SDL_PollEvent(&event)){
-
+            memcpy(oldValues,emu->inputValues, 16);
+            keyPressed = emu->updateInputValues(event);
+            if(keyPressed){
+                for(uint8_t i=0; i<16; i++){
+                    if(oldValues[i] != emu->inputValues[i]){
+                        V[x] = i;
+                    }
+                }
+            }
         }
     }
 }
